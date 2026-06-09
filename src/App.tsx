@@ -109,7 +109,7 @@ export default function App() {
   // Check backend health status dynamically to detect offline judge
   useEffect(() => {
     const checkBackend = () => {
-      fetch("http://localhost:8000/")
+      fetch("https://cyber-court-backend.onrender.com/")
         .then(res => res.json())
         .then(data => {
           if (data.status === "online") {
@@ -386,7 +386,7 @@ export default function App() {
     setMarshallLog("Establishing connection with courtroom backend...");
     playBeep('system');
     
-    const socket = new WebSocket("ws://localhost:8000/ws/debate");
+    const socket = new WebSocket("wss://cyber-court-backend.onrender.com/ws/debate");
     wsRef.current = socket;
     
     socket.onopen = () => {
