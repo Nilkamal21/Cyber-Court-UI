@@ -22,49 +22,6 @@ interface DebateTurn {
   fallacies?: Fallacy[];
 }
 
-const formatVerdictText = (text: string) => {
-  if (!text) return null;
-  
-  // Split by double newlines to get paragraphs
-  const paragraphs = text.split("\n\n");
-  
-  return paragraphs.map((p, i) => {
-    let cleanText = p.trim();
-    if (!cleanText) return null;
-    
-    // Detect subheaders (e.g. **ARTICLE I: FINDINGS OF FACT**)
-    const headerMatch = cleanText.match(/^\*\*(.*?)\*\*$/);
-    if (headerMatch) {
-      return (
-        <h4 key={i} className="text-xs font-mono font-bold tracking-widest text-cyber-judge uppercase border-b border-cyber-judge/20 pb-1.5 mt-5 mb-3">
-          {headerMatch[1]}
-        </h4>
-      );
-    }
-    
-    // Handle inline bolding (e.g. **text**)
-    const parts = cleanText.split(/(\*\*.*?\*\*)/);
-    const content = parts.map((part, idx) => {
-      if (part.startsWith("**") && part.endsWith("**")) {
-        return (
-          <strong key={idx} className="text-cyber-judge font-extrabold font-mono">
-            {part.slice(2, -2)}
-          </strong>
-        );
-      }
-      return part;
-    });
-    
-    // Determine styling for specific declarations (e.g. "IT IS SO ORDERED", "PROSECUTOR WON", etc.)
-    const isDecree = cleanText.includes("IT IS SO ORDERED") || cleanText.includes("WON THIS DEBATE") || cleanText.includes("WINNER") || cleanText.includes("FAILED TO PREVAIL");
-    
-    return (
-      <p key={i} className={`text-xs md:text-sm leading-relaxed font-mono mb-3 ${isDecree ? 'text-cyber-judge bg-[#0b1b15]/90 border border-cyber-judge/30 rounded-lg p-4 text-center font-bold tracking-wide shadow-md mt-4 glow-text-green' : 'text-slate-300'}`}>
-        {content}
-      </p>
-    );
-  });
-};
 
 export default function App() {
   // Configurations
@@ -903,18 +860,18 @@ export default function App() {
 
         {/* Verdict overlay or Round Summaries */}
         {finalVerdict ? (
-          <div className="bg-slate-950/80 border border-cyber-judge/30 rounded-xl p-6 shadow-glow-judge relative overflow-hidden">
-            {/* Pulsing jade neon scanning bar indicator */}
-            <div className="absolute top-0 left-0 w-full h-[2px] bg-cyber-judge/40 animate-pulse" />
-            
-            <div className="flex items-center gap-2 border-b border-cyber-judge/20 pb-3 mb-4">
-              <Award className="w-5 h-5 text-cyber-judge animate-pulse" />
-              <h3 className="text-sm font-bold uppercase tracking-widest text-cyber-judge font-mono glow-text-green">
-                COURT DECISION & FINAL VERDICT
-              </h3>
+          <div className="bg-slate-950/80 border border-cyber-judge/30 rounded-xl p-5 shadow-glow-judge relative overflow-hidden">
+            <div className="flex items-center gap-2 border-b border-cyber-judge/20 pb-2.5 mb-3">
+              <Award className="w-5 h-5 text-cyber-judge" />
+              <h3 className="text-sm font-bold uppercase tracking-wider text-cyber-judge font-mono">COURT DECISION & FINAL VERDICT</h3>
             </div>
-            <div className="space-y-3 animate-fade-in">
-              {formatVerdictText(finalVerdict)}
+            <div className="bg-slate-950/80 border border-slate-800/80 rounded-lg p-4 font-mono text-sm leading-relaxed text-slate-300 space-y-3">
+              {finalVerdict.split("\n\n").map((p, idx) => {
+                const cleanText = p.trim();
+                if (!cleanText) return null;
+                const textWithoutMarkdown = cleanText.replace(/\*\*/g, "");
+                return <p key={idx}>{textWithoutMarkdown}</p>;
+              })}
             </div>
           </div>
         ) : turns.length > 0 ? (
