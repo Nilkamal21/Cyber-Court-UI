@@ -27,7 +27,7 @@ export default function App() {
   // Configurations
   const [topic, setTopic] = useState("");
   const [maxRounds, setMaxRounds] = useState(2);
-  const [connectionMode, setConnectionMode] = useState<'simulated' | 'live'>('live');
+  const [connectionMode] = useState<'simulated' | 'live'>('live');
   const [isBackendOffline, setIsBackendOffline] = useState(false);
   
   // Debate States
@@ -860,20 +860,28 @@ export default function App() {
 
         {/* Verdict overlay or Round Summaries */}
         {finalVerdict ? (
-          <div className="bg-slate-950/80 border border-cyber-judge/30 rounded-xl p-5 shadow-glow-judge relative overflow-hidden">
-            <div className="flex items-center gap-2 border-b border-cyber-judge/20 pb-2.5 mb-3">
-              <Award className="w-5 h-5 text-cyber-judge" />
-              <h3 className="text-sm font-bold uppercase tracking-wider text-cyber-judge font-mono">COURT DECISION & FINAL VERDICT</h3>
+          <section className="bg-slate-950/40 border border-cyber-judge rounded-xl p-6 flex flex-col justify-between transition-all duration-300 relative shadow-glow-judge">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full border border-cyber-judge bg-cyber-judge/10 shadow-[0_0_10px_rgba(16,185,129,0.3)] flex items-center justify-center">
+                  <Award className="w-6 h-6 text-cyber-judge" />
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-mono tracking-widest text-cyber-judge">Presiding Judge</span>
+                  <h2 className="text-base font-bold text-slate-100 tracking-wide">COURT DECISION & FINAL VERDICT</h2>
+                </div>
+              </div>
+
+              <div className="bg-slate-950/80 border border-slate-800/80 rounded-lg p-4 font-mono text-sm leading-relaxed text-slate-300 space-y-3">
+                {finalVerdict.split("\n\n").map((p, idx) => {
+                  const cleanText = p.trim();
+                  if (!cleanText) return null;
+                  const textWithoutMarkdown = cleanText.replace(/\*\*/g, "");
+                  return <p key={idx}>{textWithoutMarkdown}</p>;
+                })}
+              </div>
             </div>
-            <div className="bg-slate-950/80 border border-slate-800/80 rounded-lg p-4 font-mono text-sm leading-relaxed text-slate-300 space-y-3">
-              {finalVerdict.split("\n\n").map((p, idx) => {
-                const cleanText = p.trim();
-                if (!cleanText) return null;
-                const textWithoutMarkdown = cleanText.replace(/\*\*/g, "");
-                return <p key={idx}>{textWithoutMarkdown}</p>;
-              })}
-            </div>
-          </div>
+          </section>
         ) : turns.length > 0 ? (
           /* Sleek simplified table of round scores and fallacies */
           <div className="bg-slate-950 border border-slate-850 rounded-xl p-4 space-y-3">
